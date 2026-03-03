@@ -1,0 +1,13 @@
+# Virtual muhit
+venv/
+env/
+ENV/
+.env
+
+# Python kesh fayllari
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook kesh
+.ipynb_checkpoints
