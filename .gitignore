@@ -1,13 +1,125 @@
-# Virtual muhit
-venv/
-env/
-ENV/
-.env
-
-# Python kesh fayllari
+# =========================
+# PYTHON
+# =========================
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Jupyter Notebook kesh
-.ipynb_checkpoints
+# compiled files
+*.so
+*.pyd
+*.dll
+
+# distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# =========================
+# VIRTUAL ENVIRONMENTS
+# =========================
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# =========================
+# JUPYTER
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# ENV VARIABLES
+# =========================
+.env
+.env.*
+*.env
+
+# =========================
+# DATABASE
+# =========================
+*.sqlite3
+*.db
+
+# =========================
+# LOG FILES
+# =========================
+*.log
+
+# =========================
+# CACHE
+# =========================
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# =========================
+# TEST / COVERAGE
+# =========================
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# =========================
+# IDE
+# =========================
+
+# VS CODE
+.vscode/
+
+# PyCharm
+.idea/
+
+# =========================
+# OS FILES
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# TEMP FILES
+# =========================
+*.swp
+*.swo
+*~
+
+# =========================
+# DATA FILES (optional)
+# =========================
+
+*.parquet
+*.feather
+*.h5
+
+# =========================
+# NOTEBOOK OUTPUT
+# =========================
+*.nbconvert.ipynb
+
+# =========================
+# DOCKER
+# =========================
+docker-compose.override.yml
+
+# =========================
+# PYTHON VERSION
+# =========================
+.python-version

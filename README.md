@@ -1,6 +1,6 @@
-# 📊 E-Commerce Business Analysis & Sales Forecasting Pipeline
+# 📊 E-Commerce Business Analysis & Sales Forecasting API Pipeline
 
-Ushbu loyiha chakana savdo (elektron tijorat) ma'lumotlarini tozalash, biznes metrikalarini tahlil qilish va kelajakdagi savdo hajmini mashinali o'qitish (Machine Learning) hamda statistik modellar yordamida prognoz qilish (Forecasting) uchun qurilgan to'liq ma'lumotlar quvuri (Data Pipeline) hisoblanadi.
+Ushbu loyiha chakana savdo (elektron tijorat) ma'lumotlarini tozalash, biznes metrikalarini tahlil qilish, kelajakdagi savdo hajmini mashinali o'qitish (Machine Learning) yordamida prognoz qilish (Forecasting) va olingan natijalarni **REST API** orqali taqdim etish uchun qurilgan to'liq ma'lumotlar quvuri (Data Pipeline) hisoblanadi. Loyiha to'liq **Docker** muhitiga o'tkazilgan.
 
 ## 📂 Ma'lumotlar bazasi (Datasets)
 
@@ -27,66 +27,82 @@ Loyiha uchun ikkita asosiy ma'lumotlar jadvalidan foydalanildi:
 
 ## ⚙️ Loyiha bosqichlari (What we did)
 
-Loyiha mantiqiy jihatdan 3 ta asosiy bosqichga bo'lingan:
+Loyiha mantiqiy jihatdan 4 ta asosiy bosqichga bo'lingan:
 
 ### Bosqich 1: Data Cleaning & Preprocessing (Ma'lumotlarni tozalash)
-Xom ma'lumotlarni tahlilga yaroqli holatga keltirish uchun quyidagi ishlar amalga oshirildi:
-* Ustun nomlari standartlashtirildi (`cost_prise` -> `cost_price`, `regiaon` -> `region`).
-* Bo'sh (Missing/Null) va takroriy (Duplicate) qiymatlar bazadan olib tashlandi.
+Xom ma'lumotlarni tahlilga yaroqli holatga keltirish:
+* Ustun nomlari standartlashtirildi.
+* Bo'sh (Null) va takroriy (Duplicate) qiymatlar bazadan olib tashlandi.
 * Mantiqqa to'g'ri kelmaydigan qatorlar (narx va miqdor <= 0 bo'lgan yozuvlar) tozalandi.
-* Matn formatidagi sanalar (`order_date`) to'g'ri `datetime` formatiga o'girildi va xato sanalar o'chirildi.
-* Ikki jadval `product_id` orqali birlashtirildi (Merge) va har bir tranzaksiya uchun **Tushum (Revenue)** hamda **Sof Foyda (Profit)** hisoblab chiqildi.
+* Jadvallar `product_id` orqali birlashtirildi (Merge) va har bir tranzaksiya uchun **Tushum (Revenue)** hamda **Sof Foyda (Profit)** hisoblab chiqildi.
 
 ### Bosqich 2: Data Analytics & Business Intelligence (Biznes Tahlil)
-Tozalangan ma'lumotlar asosida biznesning asosiy KPI metrikalari va vizualizatsiyalar vizual tahlil qilindi:
+Tozalangan ma'lumotlar asosida biznesning asosiy KPI metrikalari hisoblandi:
 * **Umumiy metrikalar:** Tushum, xarajat va foyda qismlari hisoblanib, biznesning "Foyda marjasi" (Profit margin) aniqlandi.
-* **Kategoriyalar va Mahsulotlar:** Tushum bo'yicha "Top 10" eng zo'r mahsulotlar hamda eng ko'p foyda keltiruvchi toifalar gorizontal grafiklarda tasvirlandi.
-* **Hududiy baholash:** Qaysi viloyatlarda savdo eng past ekanligi aniqlanib, e'tibor qaratilishi kerak bo'lgan bo'shliqlar topildi.
-* **Trend va Xatti-harakatlar:** Oylik savdo o'sish dinamikasi chiziqli grafikda (line chart), tranzaksiyalarning ish va dam olish kunlariga, shuningdek, to'lov turlariga qarab taqsimoti doiraviy (pie chart) grafiklarda ochib berildi.
+* **Hududiy va Toifaviy baholash:** Qaysi viloyatlarda savdo eng past ekanligi, shuningdek, tushum bo'yicha eng kuchli "Top 10" mahsulotlar aniqlandi.
 
 ### Bosqich 3: Sales Forecasting (Savdolarni prognozlash)
-Kelgusi (2026-yil Yanvar) oyi uchun kutilayotgan natijalarni bashorat qilish maqsadida ma'lumotlar oylik formatga o'tkazildi va 2 xil usul qo'llanildi:
-* **Linear Regression (Chiziqli regressiya):** Trendni aniqlash maqsadida qo'llanildi, biroq biznes mavsumiylikka ega bo'lgani uchun aniqlik ko'rsatkichi (R-squared) past chiqdi.
-* **Moving Average (O'rtacha siljuvchi):** Oxirgi 3 oylik ma'lumotlarga tayangan holda ishlash uchun sozlangan bu model o'zini oqladi va **~2.6% xatolik (MAPE)** bilan yuqori aniqlikdagi prognozlarni taqdim etdi.
+Kelgusi (2026-yil Yanvar) oyi uchun kutilayotgan natijalarni bashorat qilish maqsadida 2 xil usul qo'llanildi:
+* **Linear Regression (Chiziqli regressiya):** Scikit-Learn yordamida ML modeli o'qitildi.
+* **Moving Average (O'rtacha siljuvchi):** Oxirgi oylik ma'lumotlarga tayangan holda ishlash uchun sozlangan dinamik model (yuqori aniqlik).
+
+### Bosqich 4: Backend API & Dockerization (Tizimni integratsiya qilish)
+Barcha tahliliy ma'lumotlarni tashqi dasturlarga (Frontend, Mobile App) uzatish uchun **FastAPI** yordamida RESTful API qurildi. Ma'lumotlar bevosita **PostgreSQL** bazasidan o'qib olinadigan qilib sozlandi. Butun tizim **Docker** va **Docker Compose** orqali izolyatsiya qilingan muhitda yig'ildi.
+
+---
+
+## 🔌 API Endpoints (Mavjud API'lar)
+
+API server ishga tushgandan so'ng quyidagi endpoint'lardan foydalanish mumkin:
+
+* `GET /metrics` - Asosiy biznes metrikalari (Jami tushum, foyda va foyda marjasi).
+* `GET /top-products?limit=10&sort_by=revenue` - Eng yaxshi mahsulotlar ro'yxati (Tushum yoki Miqdor bo'yicha dinamik filtrlash).
+* `GET /sales-trend` - Har bir oy uchun tushum va sotilgan miqdorlar xronologiyasi.
+* `GET /region-performance` - Viloyatlar kesimida savdo unumdorligi.
+* `GET /forecast/linear-regression` - Machine Learning (Chiziqli regressiya) yordamida kelgusi oy bashorati.
+* `GET /forecast/moving-average?window=3` - O'rtacha siljuvchi usuli yordamida bashorat (necha oyga asoslanishini `window` parametri orqali boshqarish mumkin).
 
 ---
 
 ## 📈 Asosiy Natijalar va Xulosalar (Key Insights)
 
 1. **Moliyaviy Sog'lomlik:** Biznesning sof foyda marjasi **31.08%** ni tashkil etadi. Bu juda yuqori va sog'lom operatsion boshqaruvdan dalolat beradi. (Umumiy tushum: ~$63.3M, Sof foyda: ~$19.6M).
-2. **Katalizatorlar:** **"Electronics"** toifasi biznes uchun eng asosiy foyda keltiruvchi yo'nalish hisoblanadi. Asosiy e'tibor va zaxiralar shu yo'nalishga qaratilishi kerak.
-3. **Mintaqaviy rivojlanish:** **Andijon** hududi tushum bo'yicha eng oxirgi o'rinda. Bu hududda yetkazib berish, lokal reklama va dilerlik tarmoqlarini kuchaytirish tavsiya etiladi.
-4. **Prognoz:** O'rtacha siljuvchi (Moving Average) modeliga ko'ra, keyingi oyda kutilayotgan umumiy tushum **~$2.6 mln**, sotiladigan mahsulotlar miqdori esa **~15,000 dona** ekanligi bashorat qilindi. Omborda ayniqsa Electronics va Furniture toifalari zaxiralarini tayyorlash talab etiladi.
+2. **Katalizatorlar:** **"Electronics"** toifasi biznes uchun eng asosiy foyda keltiruvchi yo'nalish.
+3. **Mintaqaviy rivojlanish:** **Andijon** hududi tushum bo'yicha eng oxirgi o'rinda. Bu hududda lokal reklama va dilerlik tarmoqlarini kuchaytirish tavsiya etiladi.
+4. **Prognoz:** Moving Average modeliga ko'ra, keyingi oyda kutilayotgan umumiy tushum **~$2.6 mln**, sotiladigan mahsulotlar miqdori esa **~15,000 dona** bo'lishi bashorat qilindi.
 
 ---
 
 ## 🚀 Qanday ishga tushirish kerak? (How to run)
 
-Loyihani o'z kompyuteringizda ishga tushirish uchun quyidagi qadamlarni bajaring:
+Loyiha to'liq Docker muhitida ishlashga tayyorlangan. Hech qanday qo'shimcha baza yoki kutubxonalarni qo'lda o'rnatish shart emas.
 
-**1. Repozitoriyani yuklab oling (Clone):**
+**1. Repozitoriyani kompyuterga yuklab oling (Clone):**
 ```bash
 git clone [https://github.com/Jav0x1r01/BusinessAnalysis.git](https://github.com/Jav0x1r01/BusinessAnalysis.git)
 cd BusinessAnalysis
 ```
 
-**2. Kerakli kutubxonalarni o'rnating:**
-Dastur to'g'ri ishlashi uchun quyidagi Python kutubxonalari o'rnatilgan bo'lishi kerak:
+**2. Docker orqali ishga tushiring:**
 ```bash
-pip install pandas numpy matplotlib seaborn scikit-learn jupyter
+docker-compose up --build
 ```
 
-**3. Jupyter Notebook'ni ishga tushiring:**
-```bash
-jupyter notebook
-```
-Brauzeringizda ochilgan oynadan `data_pipeline.ipynb` faylini tanlang va kodlarni yuqoridan pastga qarab ishga tushiring (`Shift + Enter`).
+**Nima sodir bo'ladi?**
+* Avval `PostgreSQL` ma'lumotlar bazasi ko'tariladi.
+* Avtomatik ravishda `load_to_db.py` skripti ishga tushib, CSV fayllardagi ma'lumotlarni bazaga yuklaydi.
+* So'ngra `FastAPI` serveri ishga tushadi.
+
+**3. API ni tekshirish:**
+Brauzeringizda quyidagi manzilga kiring:
+👉 **http://localhost:8000/docs**
+*(Swagger UI orqali barcha API so'rovlarni to'g'ridan-to'g'ri brauzerda tekshirib ko'rishingiz mumkin).*
 
 ---
 
 ## 💻 Texnologiyalar (Tech Stack)
-* **Dasturlash tili:** Python 3
-* **Ma'lumotlar tahlili va tozalash:** Pandas, NumPy
-* **Vizualizatsiya:** Matplotlib, Seaborn
-* **Mashinali o'qitish (ML):** Scikit-Learn (Linear Regression)
-* **Muhit:** Jupyter Notebook
+* **Backend:** FastAPI, Uvicorn, Python 3.11
+* **Database & ORM:** PostgreSQL, SQLAlchemy, psycopg2-binary
+* **Data Engineering & ML:** Pandas, NumPy, Scikit-Learn
+* **DevOps:** Docker, Docker Compose, Bash Scripting
+* **Data Analysis:** Jupyter Notebook, Matplotlib, Seaborn
